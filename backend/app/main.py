@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from . import models
 from .database import engine
-from .routes import auth_routes, employee_routes, shift_routes, leave_routes, shift_entry_routes
+from .routes import auth_routes, employee_routes, shift_routes, leave_routes, shift_entry_routes, reports_routes
 
 app = FastAPI(title="Dataways Attendance Management System")
 
@@ -24,6 +24,7 @@ app.include_router(employee_routes.router)
 app.include_router(shift_routes.router)
 app.include_router(leave_routes.router)
 app.include_router(shift_entry_routes.router)
+app.include_router(reports_routes.router)
 
 @app.get("/")
 def read_root():
