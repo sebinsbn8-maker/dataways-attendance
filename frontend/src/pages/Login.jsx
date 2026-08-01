@@ -76,8 +76,8 @@ function Login() {
         <p className="text-indigo-300/60 text-sm">Secure attendance platform · From Infolks Group</p>
       </div>
 
-      <div className="w-full lg:w-[30%] flex items-center justify-center bg-[#f5f6fb] p-8">
-        <div className="w-full max-w-sm">
+      <div className="w-full lg:w-[30%] flex items-center justify-center bg-[#0a0a2e] lg:bg-[#f5f6fb] p-6 sm:p-8">
+        <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6 lg:bg-transparent lg:shadow-none lg:rounded-none lg:p-0">
           <div className="lg:hidden mb-8 text-center flex items-center justify-center gap-2">
             <img src={logo} alt="Dataways" className="h-10" />
             <span className="text-xl font-bold text-slate-900">Dataways</span>

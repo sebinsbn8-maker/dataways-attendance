@@ -186,8 +186,14 @@ function ShiftLog() {
               </div>
             )}
 
-            <input type="time" name="check_in" value={formData.check_in} onChange={handleChange} placeholder="Check In" className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
-            <input type="time" name="check_out" value={formData.check_out} onChange={handleChange} placeholder="Check Out" className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            <div>
+              <label className="block text-xs font-medium text-slate-500 mb-1 sm:hidden">Start Time</label>
+              <input type="time" name="check_in" value={formData.check_in} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-500 mb-1 sm:hidden">End Time</label>
+              <input type="time" name="check_out" value={formData.check_out} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            </div>
 
             <select name="system_type" value={formData.system_type} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full">
               <option value="Office">Office System</option>

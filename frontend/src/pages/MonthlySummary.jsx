@@ -4,11 +4,21 @@ import api from '../api/axios';
 import { isAdmin } from '../utils/auth';
 
 const SHIFT_TYPES = ['General', 'Morning', 'Evening', 'Night', 'OT', 'Work From Home', 'Half Day', 'Leave'];
-
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
 ];
+
+const TYPE_STYLES = {
+  General: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+  Morning: 'bg-amber-50 text-amber-700 border-amber-100',
+  Evening: 'bg-orange-50 text-orange-700 border-orange-100',
+  Night: 'bg-violet-50 text-violet-700 border-violet-100',
+  OT: 'bg-rose-50 text-rose-700 border-rose-100',
+  'Work From Home': 'bg-teal-50 text-teal-700 border-teal-100',
+  'Half Day': 'bg-sky-50 text-sky-700 border-sky-100',
+  Leave: 'bg-slate-100 text-slate-600 border-slate-200',
+};
 
 function MonthlySummary() {
   const admin = isAdmin();
@@ -34,18 +44,17 @@ function MonthlySummary() {
 
   return (
     <Layout>
-      <div className="p-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="p-4 sm:p-8">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 sm:mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-1">Monthly Summary</h1>
-            <p className="text-slate-500">Shift hours totals by month</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-1">Monthly Summary</h1>
+            <p className="text-sm sm:text-base text-slate-500">Shift hours totals by month</p>
           </div>
-
           <div className="flex gap-3">
             <select
               value={month}
               onChange={(e) => setMonth(parseInt(e.target.value))}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 sm:flex-none"
             >
               {MONTH_NAMES.map((m, i) => (
                 <option key={i + 1} value={i + 1}>{m}</option>
@@ -54,7 +63,7 @@ function MonthlySummary() {
             <select
               value={year}
               onChange={(e) => setYear(parseInt(e.target.value))}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm"
+              className="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 sm:flex-none"
             >
               {[year - 1, year, year + 1].map((y) => (
                 <option key={y} value={y}>{y}</option>
@@ -72,25 +81,26 @@ function MonthlySummary() {
         )}
 
         {summary.map((emp) => (
-          <div key={emp.employee_id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-4">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-slate-800">
+          <div key={emp.employee_id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-4">
+            <div className="bg-gradient-to-r from-[#0a0a2e] to-indigo-900 px-4 sm:px-6 py-4 flex justify-between items-center">
+              <h2 className="text-base sm:text-lg font-semibold text-white">
                 {admin ? emp.employee_name : 'Your Summary'}
               </h2>
-              <span className="text-lg font-bold text-[#0a0a2e]">
-                {emp.total_hours} hrs total
+              <span className="text-base sm:text-lg font-bold text-white bg-white/10 px-3 py-1 rounded-full">
+                {emp.total_hours} hrs
               </span>
             </div>
-
-            <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
-              {SHIFT_TYPES.map((type) => (
-                <div key={type} className="bg-gray-50 rounded-lg p-3 text-center">
-                  <p className="text-xs text-slate-500 mb-1">{type}</p>
-                  <p className="font-semibold text-slate-800">
-                    {emp.totals_by_type[type] || 0}
-                  </p>
-                </div>
-              ))}
+            <div className="p-4 sm:p-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-8 gap-3">
+                {SHIFT_TYPES.map((type) => (
+                  <div key={type} className={`rounded-lg p-3 text-center border ${TYPE_STYLES[type]}`}>
+                    <p className="text-xs font-medium mb-1">{type}</p>
+                    <p className="font-bold text-lg">
+                      {emp.totals_by_type[type] || 0}
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}
