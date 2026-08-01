@@ -1,24 +1,8 @@
-import { useEffect, useState } from 'react';
 import Layout from '../components/Layout';
-import api from '../api/axios';
-import { getUserEmail } from '../utils/auth';
+import { getUserName } from '../utils/auth';
 
 function Dashboard() {
-  const [userName, setUserName] = useState('');
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await api.get('/employees/');
-        const email = getUserEmail();
-        const me = res.data.find((emp) => emp.email === email);
-        if (me) setUserName(me.name);
-      } catch (err) {
-        // silently ignore, welcome message just won't show
-      }
-    };
-    fetchUser();
-  }, []);
+  const userName = getUserName();
 
   return (
     <Layout>
@@ -32,9 +16,9 @@ function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-sm text-slate-500 mb-1">Quick Action</p>
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">Mark Attendance</h2>
-            <a href="/attendance" className="text-blue-600 text-sm font-medium hover:underline">
-              Go to Attendance →
+            <h2 className="text-lg font-semibold text-slate-800 mb-4">Log Your Shift</h2>
+            <a href="/shift-log" className="text-blue-600 text-sm font-medium hover:underline">
+              Go to Shift Log →
             </a>
           </div>
 

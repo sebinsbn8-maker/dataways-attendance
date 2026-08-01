@@ -36,5 +36,5 @@ def login(credentials: schemas.LoginRequest, db: Session = Depends(get_db)):
     if not user or not auth.verify_password(credentials.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    token = auth.create_access_token(data={"sub": user.email, "role": user.role})
+    token = auth.create_access_token(data={"sub": user.email, "role": user.role, "name": user.name})
     return {"access_token": token, "token_type": "bearer"}
