@@ -9,17 +9,17 @@ export function getUserRole() {
   }
 }
 
-export function getUserName() {
+export function isAdmin() {
+  return getUserRole() === 'Admin';
+}
+
+export function getUserEmail() {
   const token = localStorage.getItem('token');
   if (!token) return null;
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.name || null;
+    return payload.sub || null;
   } catch (err) {
     return null;
   }
-}
-
-export function isAdmin() {
-  return getUserRole() === 'Admin';
 }
