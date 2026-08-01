@@ -24,7 +24,13 @@ def apply_leave(leave: schemas.LeaveCreate, db: Session = Depends(get_db), curre
 
 @router.get("/my", response_model=List[schemas.LeaveOut])
 def my_leaves(db: Session = Depends(get_db), current_user=Depends(get_current_user)):
-    return db.query(models.Leave).filter(models.Leave.employee_id == current_user.id).order_by(models.Leave.id.desc()).all()
+    leaves = db.query(models.Leave).filter(models.Leave.employee_id == current_user.id).order_by(models.Leave.id.desc()).all()
+    result = []
+    for leave in leaves:
+        out = schemas.LeaveOut.model_validate(leave)
+        out.employee_name = leave.employee.name if leave.employee else None
+        result.append(out)
+    return result
 
 @router.get("/", response_model=List[schemas.LeaveOut])
 def all_leaves(db: Session = Depends(get_db), current_user=Depends(require_admin)):
@@ -49,3 +55,14 @@ def update_leave_status(leave_id: int, update: schemas.LeaveStatusUpdate, db: Se
     out = schemas.LeaveOut.model_validate(leave)
     out.employee_name = leave.employee.name if leave.employee else None
     return out
+
+@router.delete("/{leave_id}")
+def cancel_leave(leave_id: int, db: Session = Depends(get_db), current_user=Depends(get_current_user)):
+    leave = db.query(models.Leave).filter(models.Leave.id == leave_id).first()
+    if not leave:
+        raise HTTPException(status_code=404, detail="Leave request not found")
+    if current_user.role != "Admin" and leave.employee_id != current_user.id:
+        raise HTTPException(status_code=403, detail="You can only cancel your own leave requests")
+    db.delete(leave)
+    db.commit()
+    return {"message": "Leave request cancelled"}

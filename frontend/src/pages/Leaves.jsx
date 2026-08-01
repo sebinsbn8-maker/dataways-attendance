@@ -56,6 +56,16 @@ function Leaves() {
     }
   };
 
+  const handleCancel = async (id) => {
+    if (!window.confirm('Cancel this leave request?')) return;
+    try {
+      await api.delete(`/leaves/${id}`);
+      fetchLeaves();
+    } catch (err) {
+      setError('Failed to cancel leave request');
+    }
+  };
+
   const statusBadge = (status) => {
     const styles = {
       Pending: 'bg-amber-100 text-amber-700',
@@ -107,6 +117,7 @@ function Leaves() {
                 <th className="p-4 font-medium text-slate-500">End Date</th>
                 <th className="p-4 font-medium text-slate-500">Reason</th>
                 <th className="p-4 font-medium text-slate-500">Status</th>
+                <th className="p-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -116,10 +127,17 @@ function Leaves() {
                   <td className="p-4 text-slate-700">{leave.end_date}</td>
                   <td className="p-4 text-slate-500">{leave.reason || '-'}</td>
                   <td className="p-4">{statusBadge(leave.status)}</td>
+                  <td className="p-4">
+                    {leave.status === 'Pending' && (
+                      <button onClick={() => handleCancel(leave.id)} className="text-red-600 hover:text-red-700 text-xs font-medium">
+                        Cancel
+                      </button>
+                    )}
+                  </td>
                 </tr>
               ))}
               {myLeaves.length === 0 && (
-                <tr><td colSpan="4" className="p-4 text-center text-slate-400">No leave requests yet</td></tr>
+                <tr><td colSpan="5" className="p-4 text-center text-slate-400">No leave requests yet</td></tr>
               )}
             </tbody>
           </table>

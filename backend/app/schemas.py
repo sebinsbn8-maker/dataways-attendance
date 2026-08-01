@@ -63,6 +63,7 @@ class LeaveCreate(BaseModel):
 class LeaveOut(BaseModel):
     id: int
     employee_id: int
+    employee_name: Optional[str] = None
     start_date: date
     end_date: date
     reason: Optional[str]
