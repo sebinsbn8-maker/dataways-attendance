@@ -43,9 +43,23 @@ function Login() {
     }
   };
 
+  const handleForgotClick = (e) => {
+    e.preventDefault();
+    alert('Please contact your Admin to reset your password.');
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await api.post('/auth/google', { credential: credentialResponse.credential });
+      localStorage.setItem('token', res.data.access_token);
+      navigate('/dashboard');
+    } catch (err) {
+      setError('Google sign-in failed');
+    }
+  };
+
   return (
     <div className="min-h-screen flex">
-      {/* Left branding panel */}
       <div className="hidden lg:flex lg:w-[70%] bg-[#0a0a2e] text-white flex-col justify-between p-12">
         <div className="flex items-center gap-3">
           <img src={logo} alt="Dataways" className="h-10" />
@@ -62,7 +76,6 @@ function Login() {
         <p className="text-indigo-300/60 text-sm">Secure attendance platform · From Infolks Group</p>
       </div>
 
-      {/* Right login form */}
       <div className="w-full lg:w-[30%] flex items-center justify-center bg-[#f5f6fb] p-8">
         <div className="w-full max-w-sm">
           <div className="lg:hidden mb-8 text-center flex items-center justify-center gap-2">
@@ -77,7 +90,6 @@ function Login() {
             {activeTab === 'signin' ? 'Welcome back to your workspace.' : 'Join your team workspace.'}
           </p>
 
-          {/* Tabs */}
           <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
             <button
               type="button"
@@ -160,7 +172,7 @@ function Login() {
               </form>
             )
           ) : (
-            <>
+            <div>
               {error && (
                 <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">
                   {error}
@@ -179,11 +191,7 @@ function Login() {
 
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-xs font-semibold tracking-wide text-slate-500 uppercase">Password</label>
-                  
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); alert('Please contact your Admin to reset your password.'); }}
-                    className="text-xs text-indigo-600 hover:underline"
-                  >
+                  <a href="#" onClick={handleForgotClick} className="text-xs text-indigo-600 hover:underline">
                     Forgot password?
                   </a>
                 </div>
@@ -211,20 +219,12 @@ function Login() {
 
               <div className="flex justify-center">
                 <GoogleLogin
-                  onSuccess={async (credentialResponse) => {
-                    try {
-                      const res = await api.post('/auth/google', { credential: credentialResponse.credential });
-                      localStorage.setItem('token', res.data.access_token);
-                      navigate('/dashboard');
-                    } catch (err) {
-                      setError('Google sign-in failed');
-                    }
-                  }}
+                  onSuccess={handleGoogleSuccess}
                   onError={() => setError('Google sign-in failed')}
                   width="320"
                 />
               </div>
-            </>
+            </div>
           )}
         </div>
       </div>
