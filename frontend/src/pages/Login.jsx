@@ -77,25 +77,27 @@ function Login() {
       </div>
 
       <div className="w-full lg:w-[30%] flex items-center justify-center bg-[#0a0a2e] lg:bg-[#f5f6fb] p-6 sm:p-8">
-        <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl p-6 lg:bg-transparent lg:shadow-none lg:rounded-none lg:p-0">
+        <div className="w-full max-w-sm bg-[#12123f] lg:bg-transparent rounded-2xl shadow-xl lg:shadow-none p-6 lg:p-0">
           <div className="lg:hidden mb-8 text-center flex items-center justify-center gap-2">
             <img src={logo} alt="Dataways" className="h-10" />
-            <span className="text-xl font-bold text-slate-900">Dataways</span>
+            <span className="text-xl font-bold text-white">Dataways</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">
+          <h2 className="text-2xl font-bold text-white lg:text-slate-900 mb-1">
             {activeTab === 'signin' ? 'Sign in' : 'Create account'}
           </h2>
-          <p className="text-slate-500 mb-6">
+          <p className="text-indigo-200 lg:text-slate-500 mb-6">
             {activeTab === 'signin' ? 'Welcome back to your workspace.' : 'Join your team workspace.'}
           </p>
 
-          <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
+          <div className="flex bg-white/10 lg:bg-gray-100 rounded-lg p-1 mb-6">
             <button
               type="button"
               onClick={() => setActiveTab('signin')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition ${
-                activeTab === 'signin' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+                activeTab === 'signin'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-indigo-200 lg:text-slate-500'
               }`}
             >
               Sign in
@@ -104,7 +106,9 @@ function Login() {
               type="button"
               onClick={() => setActiveTab('create')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition ${
-                activeTab === 'create' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'
+                activeTab === 'create'
+                  ? 'bg-white text-slate-900 shadow-sm'
+                  : 'text-indigo-200 lg:text-slate-500'
               }`}
             >
               Create account
@@ -119,12 +123,12 @@ function Login() {
             ) : (
               <form onSubmit={handleSignupSubmit}>
                 {signupError && (
-                  <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">
+                  <div className="bg-red-500/10 text-red-300 lg:bg-red-50 lg:text-red-700 text-sm p-3 rounded-lg mb-4">
                     {signupError}
                   </div>
                 )}
 
-                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Full Name</label>
+                <label className="block text-xs font-semibold tracking-wide text-indigo-200 lg:text-slate-500 mb-1 uppercase">Full Name</label>
                 <input
                   name="name"
                   type="text"
@@ -134,7 +138,7 @@ function Login() {
                   className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
 
-                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Email</label>
+                <label className="block text-xs font-semibold tracking-wide text-indigo-200 lg:text-slate-500 mb-1 uppercase">Email</label>
                 <input
                   name="email"
                   type="email"
@@ -144,7 +148,7 @@ function Login() {
                   className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
 
-                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Password</label>
+                <label className="block text-xs font-semibold tracking-wide text-indigo-200 lg:text-slate-500 mb-1 uppercase">Password</label>
                 <input
                   name="password"
                   type="password"
@@ -154,7 +158,7 @@ function Login() {
                   className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
 
-                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Department</label>
+                <label className="block text-xs font-semibold tracking-wide text-indigo-200 lg:text-slate-500 mb-1 uppercase">Department</label>
                 <input
                   name="department"
                   type="text"
@@ -174,13 +178,13 @@ function Login() {
           ) : (
             <div>
               {error && (
-                <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">
+                <div className="bg-red-500/10 text-red-300 lg:bg-red-50 lg:text-red-700 text-sm p-3 rounded-lg mb-4">
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit}>
-                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Email</label>
+                <label className="block text-xs font-semibold tracking-wide text-indigo-200 lg:text-slate-500 mb-1 uppercase">Email</label>
                 <input
                   type="email"
                   value={email}
@@ -190,8 +194,8 @@ function Login() {
                 />
 
                 <div className="flex justify-between items-center mb-1">
-                  <label className="block text-xs font-semibold tracking-wide text-slate-500 uppercase">Password</label>
-                  <a href="#" onClick={handleForgotClick} className="text-xs text-indigo-600 hover:underline">
+                  <label className="block text-xs font-semibold tracking-wide text-indigo-200 lg:text-slate-500 uppercase">Password</label>
+                  <a href="#" onClick={handleForgotClick} className="text-xs text-indigo-300 lg:text-indigo-600 hover:underline">
                     Forgot password?
                   </a>
                 </div>
@@ -212,9 +216,9 @@ function Login() {
               </form>
 
               <div className="flex items-center gap-3 my-6">
-                <div className="flex-1 h-px bg-gray-200"></div>
-                <span className="text-xs text-slate-400">or continue with</span>
-                <div className="flex-1 h-px bg-gray-200"></div>
+                <div className="flex-1 h-px bg-white/10 lg:bg-gray-200"></div>
+                <span className="text-xs text-indigo-300 lg:text-slate-400">or continue with</span>
+                <div className="flex-1 h-px bg-white/10 lg:bg-gray-200"></div>
               </div>
 
               <div className="flex justify-center">
