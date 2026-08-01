@@ -22,7 +22,7 @@ def register(employee: schemas.EmployeeCreate, db: Session = Depends(get_db)):
         email=employee.email,
         password=hashed_pw,
         department=employee.department,
-        role=employee.role,
+        role="Employee",
         shift=employee.shift,
     )
     db.add(new_employee)
@@ -36,5 +36,5 @@ def login(credentials: schemas.LoginRequest, db: Session = Depends(get_db)):
     if not user or not auth.verify_password(credentials.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
-    token = auth.create_access_token(data={"sub": user.email, "role": user.role, "name": user.name})
+    token = auth.create_access_token(data={"sub": user.email, "role": user.role})
     return {"access_token": token, "token_type": "bearer"}

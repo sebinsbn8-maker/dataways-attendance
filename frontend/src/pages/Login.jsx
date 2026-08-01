@@ -10,6 +10,10 @@ function Login() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  const [signupData, setSignupData] = useState({ name: '', email: '', password: '', department: '', shift: '' });
+  const [signupError, setSignupError] = useState('');
+  const [signupSuccess, setSignupSuccess] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -20,6 +24,21 @@ function Login() {
       navigate('/dashboard');
     } catch (err) {
       setError('Invalid email or password');
+    }
+  };
+
+  const handleSignupChange = (e) => {
+    setSignupData({ ...signupData, [e.target.name]: e.target.value });
+  };
+
+  const handleSignupSubmit = async (e) => {
+    e.preventDefault();
+    setSignupError('');
+    try {
+      await api.post('/auth/register', signupData);
+      setSignupSuccess(true);
+    } catch (err) {
+      setSignupError(err.response?.data?.detail || 'Failed to create account');
     }
   };
 
@@ -50,8 +69,12 @@ function Login() {
             <span className="text-xl font-bold text-slate-900">Dataways</span>
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">Sign in</h2>
-          <p className="text-slate-500 mb-6">Welcome back to your workspace.</p>
+          <h2 className="text-2xl font-bold text-slate-900 mb-1">
+            {activeTab === 'signin' ? 'Sign in' : 'Create account'}
+          </h2>
+          <p className="text-slate-500 mb-6">
+            {activeTab === 'signin' ? 'Welcome back to your workspace.' : 'Join your team workspace.'}
+          </p>
 
           {/* Tabs */}
           <div className="flex bg-gray-100 rounded-lg p-1 mb-6">
@@ -76,9 +99,65 @@ function Login() {
           </div>
 
           {activeTab === 'create' ? (
-            <div className="bg-indigo-50 text-indigo-700 text-sm p-4 rounded-lg">
-              New accounts are created by your Admin. Please contact your HR or Admin team to get access.
-            </div>
+            signupSuccess ? (
+              <div className="bg-green-50 text-green-700 text-sm p-4 rounded-lg">
+                Account created! You can now switch to Sign in and log in.
+              </div>
+            ) : (
+              <form onSubmit={handleSignupSubmit}>
+                {signupError && (
+                  <div className="bg-red-50 text-red-700 text-sm p-3 rounded-lg mb-4">
+                    {signupError}
+                  </div>
+                )}
+
+                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Full Name</label>
+                <input
+                  name="name"
+                  type="text"
+                  value={signupData.name}
+                  onChange={handleSignupChange}
+                  required
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Email</label>
+                <input
+                  name="email"
+                  type="email"
+                  value={signupData.email}
+                  onChange={handleSignupChange}
+                  required
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Password</label>
+                <input
+                  name="password"
+                  type="password"
+                  value={signupData.password}
+                  onChange={handleSignupChange}
+                  required
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <label className="block text-xs font-semibold tracking-wide text-slate-500 mb-1 uppercase">Department</label>
+                <input
+                  name="department"
+                  type="text"
+                  value={signupData.department}
+                  onChange={handleSignupChange}
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2.5 mb-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition"
+                >
+                  Create account
+                </button>
+              </form>
+            )
           ) : (
             <>
               {error && (
@@ -99,7 +178,7 @@ function Login() {
 
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-xs font-semibold tracking-wide text-slate-500 uppercase">Password</label>
-                  <a href="#" className="text-xs text-indigo-600 hover:underline">Forgot password?</a>
+                  <a href="/forgot-password" className="text-xs text-indigo-600 hover:underline">Forgot password?</a>
                 </div>
                 <input
                   type="password"
