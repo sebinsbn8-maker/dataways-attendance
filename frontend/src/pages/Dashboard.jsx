@@ -1,8 +1,9 @@
 import Layout from '../components/Layout';
-import { getUserName } from '../utils/auth';
+import { getUserName, isAdmin } from '../utils/auth';
 
 function Dashboard() {
   const userName = getUserName();
+  const admin = isAdmin();
 
   return (
     <Layout>
@@ -24,7 +25,9 @@ function Dashboard() {
 
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
             <p className="text-sm text-slate-500 mb-1">Quick Action</p>
-            <h2 className="text-lg font-semibold text-slate-800 mb-4">Manage Team</h2>
+            <h2 className="text-lg font-semibold text-slate-800 mb-4">
+              {admin ? 'Manage Team' : 'View Employees'}
+            </h2>
             <a href="/employees" className="text-blue-600 text-sm font-medium hover:underline">
               Go to Employees →
             </a>
