@@ -52,6 +52,17 @@ function Employees() {
     }
   };
 
+  const handleResetPassword = async (id, name) => {
+    const newPassword = window.prompt(`Enter new password for ${name}:`);
+    if (!newPassword) return;
+    try {
+      await api.put(`/employees/${id}/reset-password`, { new_password: newPassword });
+      alert('Password reset successfully.');
+    } catch (err) {
+      setError('Failed to reset password');
+    }
+  };
+
   return (
     <Layout>
       <div className="p-8">
@@ -63,7 +74,7 @@ function Employees() {
           {admin && (
             <button
               onClick={() => setShowForm(!showForm)}
-              className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700"
+              className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700 transition"
             >
               {showForm ? 'Cancel' : '+ Add Employee'}
             </button>
@@ -74,17 +85,17 @@ function Employees() {
 
         {showForm && admin && (
           <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-6 grid grid-cols-2 gap-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" className="border border-gray-200 rounded-lg px-3 py-2" required />
-            <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email" className="border border-gray-200 rounded-lg px-3 py-2" required />
-            <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password" className="border border-gray-200 rounded-lg px-3 py-2" required />
-            <input name="department" value={formData.department} onChange={handleChange} placeholder="Department" className="border border-gray-200 rounded-lg px-3 py-2" required />
-            <select name="role" value={formData.role} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2">
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="Name" required className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input name="email" type="email" value={formData.email} onChange={handleChange} placeholder="Email" required className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input name="password" type="password" value={formData.password} onChange={handleChange} placeholder="Password" required className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input name="department" value={formData.department} onChange={handleChange} placeholder="Department" className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <select name="role" value={formData.role} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="Employee">Employee</option>
               <option value="HR">HR</option>
               <option value="Admin">Admin</option>
             </select>
-            <input name="shift" value={formData.shift} onChange={handleChange} placeholder="Shift" className="border border-gray-200 rounded-lg px-3 py-2" />
-            <button type="submit" className="col-span-2 bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700">
+            <input name="shift" value={formData.shift} onChange={handleChange} placeholder="Shift" className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <button type="submit" className="col-span-2 bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 transition">
               Create Employee
             </button>
           </form>
@@ -126,9 +137,14 @@ function Employees() {
                   </td>
                   <td className="p-4">
                     {admin && (
-                      <button onClick={() => handleDelete(emp.id)} className="text-red-600 hover:text-red-700 text-sm font-medium">
-                        Delete
-                      </button>
+                      <div className="flex gap-3">
+                        <button onClick={() => handleResetPassword(emp.id, emp.name)} className="text-indigo-600 hover:underline text-xs font-medium">
+                          Reset Password
+                        </button>
+                        <button onClick={() => handleDelete(emp.id)} className="text-red-600 hover:underline text-xs font-medium">
+                          Delete
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>

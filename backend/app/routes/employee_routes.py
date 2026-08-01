@@ -44,3 +44,12 @@ def delete_employee(employee_id: int, db: Session = Depends(get_db), current_use
     db.delete(employee)
     db.commit()
     return {"message": "Employee deleted"}
+
+@router.put("/{employee_id}/reset-password")
+def reset_password(employee_id: int, payload: schemas.PasswordReset, db: Session = Depends(get_db), current_user=Depends(require_admin)):
+    employee = db.query(models.Employee).filter(models.Employee.id == employee_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    employee.password = auth.hash_password(payload.new_password)
+    db.commit()
+    return {"message": "Password reset successfully"}
