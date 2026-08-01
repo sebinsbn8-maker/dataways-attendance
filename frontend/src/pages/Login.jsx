@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 import logo from '../assets/logo.png';
+import { GoogleLogin } from '@react-oauth/google';
 
 function Login() {
   const [activeTab, setActiveTab] = useState('signin');
@@ -178,7 +179,13 @@ function Login() {
 
                 <div className="flex justify-between items-center mb-1">
                   <label className="block text-xs font-semibold tracking-wide text-slate-500 uppercase">Password</label>
-                  <a href="/forgot-password" className="text-xs text-indigo-600 hover:underline">Forgot password?</a>
+                  
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); alert('Please contact your Admin to reset your password.'); }}
+                    className="text-xs text-indigo-600 hover:underline"
+                  >
+                    Forgot password?
+                  </a>
                 </div>
                 <input
                   type="password"
@@ -202,19 +209,21 @@ function Login() {
                 <div className="flex-1 h-px bg-gray-200"></div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => alert('Google sign-in is not set up yet.')}
-                className="w-full bg-white border border-gray-200 text-slate-700 py-2.5 rounded-lg font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M23.766 12.276c0-.818-.074-1.606-.212-2.364H12.24v4.474h6.484a5.55 5.55 0 01-2.41 3.643v3.03h3.9c2.28-2.1 3.552-5.19 3.552-8.783z"/>
-                  <path fill="#34A853" d="M12.24 24c3.26 0 5.994-1.08 7.992-2.94l-3.9-3.03c-1.08.724-2.462 1.15-4.092 1.15-3.148 0-5.812-2.126-6.764-4.984h-4.02v3.13C3.44 21.3 7.51 24 12.24 24z"/>
-                  <path fill="#FBBC05" d="M5.476 14.196A7.23 7.23 0 015.1 12c0-.762.132-1.5.376-2.196v-3.13h-4.02A11.98 11.98 0 000 12c0 1.936.464 3.768 1.276 5.326l4.2-3.13z"/>
-                  <path fill="#EA4335" d="M12.24 4.77c1.774 0 3.366.61 4.62 1.804l3.464-3.464C18.228 1.19 15.494 0 12.24 0 7.51 0 3.44 2.7 1.276 6.674l4.2 3.13c.952-2.858 3.616-4.984 6.764-4.984z"/>
-                </svg>
-                Continue with Google
-              </button>
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={async (credentialResponse) => {
+                    try {
+                      const res = await api.post('/auth/google', { credential: credentialResponse.credential });
+                      localStorage.setItem('token', res.data.access_token);
+                      navigate('/dashboard');
+                    } catch (err) {
+                      setError('Google sign-in failed');
+                    }
+                  }}
+                  onError={() => setError('Google sign-in failed')}
+                  width="320"
+                />
+              </div>
             </>
           )}
         </div>
