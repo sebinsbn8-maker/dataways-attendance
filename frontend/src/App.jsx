@@ -6,6 +6,7 @@ import Shifts from './pages/Shifts';
 import Leaves from './pages/Leaves';
 import ShiftLog from './pages/ShiftLog';
 import MonthlySummary from './pages/MonthlySummary';
+import EmployeeDetail from './pages/EmployeeDetail';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/employees" element={<Employees />} />
+        <Route path="/employees/:id" element={<EmployeeDetail />} />
         <Route path="/shifts" element={<Shifts />} />
         <Route path="/leaves" element={<Leaves />} />
         <Route path="/shift-log" element={<ShiftLog />} />

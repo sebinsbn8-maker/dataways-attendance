@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import Layout from '../components/Layout';
 import api from '../api/axios';
 import { isAdmin } from '../utils/auth';
@@ -118,7 +119,11 @@ function Employees() {
               {employees.map((emp) => (
                 <tr key={emp.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50">
                   <td className="p-4 text-slate-700">{emp.employee_id}</td>
-                  <td className="p-4 text-slate-700 font-medium">{emp.name}</td>
+                  <td className="p-4 text-slate-700 font-medium">
+                    <Link to={`/employees/${emp.id}`} className="hover:underline hover:text-blue-600">
+                      {emp.name}
+                    </Link>
+                  </td>
                   <td className="p-4 text-slate-500">{emp.email}</td>
                   <td className="p-4 text-slate-500">{emp.department}</td>
                   <td className="p-4">
