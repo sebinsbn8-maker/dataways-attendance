@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, Dict
 from datetime import date, time
 
 class EmployeeCreate(BaseModel):
@@ -76,3 +76,38 @@ class LeaveStatusUpdate(BaseModel):
 
 class PasswordReset(BaseModel):
     new_password: str
+
+class ShiftEntryCreate(BaseModel):
+    employee_id: Optional[int] = None
+    date: date
+    shift_type: str
+    check_in: Optional[time] = None
+    check_out: Optional[time] = None
+    manual_hours: Optional[float] = None
+    project_name: Optional[str] = None
+    system_type: Optional[str] = None
+    remarks: Optional[str] = None
+
+class ShiftEntryOut(BaseModel):
+    id: int
+    employee_id: int
+    employee_name: Optional[str] = None
+    date: date
+    shift_type: str
+    check_in: Optional[time]
+    check_out: Optional[time]
+    hours: float
+    project_name: Optional[str]
+    system_type: Optional[str]
+    remarks: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class ShiftEntryMonthlySummary(BaseModel):
+    employee_id: int
+    employee_name: str
+    month: int
+    year: int
+    totals_by_type: Dict[str, float]
+    total_hours: float
