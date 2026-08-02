@@ -20,6 +20,7 @@ function ShiftLog() {
   const admin = isAdmin();
   const [entries, setEntries] = useState([]);
   const [employees, setEmployees] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [error, setError] = useState('');
   const [editingId, setEditingId] = useState(null);
 
@@ -58,8 +59,18 @@ function ShiftLog() {
     }
   };
 
+  const fetchProjects = async () => {
+    try {
+      const res = await api.get('/projects/');
+      setProjects(res.data);
+    } catch (err) {
+      // ignore
+    }
+  };
+
   useEffect(() => {
     fetchEmployees();
+    fetchProjects();
   }, []);
 
   useEffect(() => {
@@ -200,7 +211,12 @@ function ShiftLog() {
               <option value="Personal">Personal System</option>
             </select>
 
-            <input name="project_name" value={formData.project_name} onChange={handleChange} placeholder="Project name" className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            <select name="project_name" value={formData.project_name} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full">
+              <option value="">No project</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.name}>{p.name}</option>
+              ))}
+            </select>
           </div>
 
           <input name="remarks" value={formData.remarks} onChange={handleChange} placeholder="Remarks" className="w-full border border-gray-200 rounded-lg px-3 py-2 mb-4" />

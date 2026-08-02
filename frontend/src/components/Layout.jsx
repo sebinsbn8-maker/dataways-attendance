@@ -22,6 +22,7 @@ function Layout({ children }) {
     { path: '/shifts', label: 'Shifts', icon: '📅', adminOnly: true },
     { path: '/leaves', label: 'Leaves', icon: '📝' },
     { path: '/reports', label: 'Reports', icon: '📈', adminOnly: true },
+    { path: '/projects', label: 'Projects', icon: '🗂️', adminOnly: true },
   ];
 
   const visibleNavItems = navItems.filter((item) => !item.adminOnly || admin);
