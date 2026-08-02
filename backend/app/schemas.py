@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 from datetime import date, time
 
 class EmployeeCreate(BaseModel):
@@ -19,7 +19,6 @@ class EmployeeOut(BaseModel):
     role: str
     shift: Optional[str]
     status: str
-
     class Config:
         from_attributes = True
 
@@ -37,7 +36,6 @@ class AttendanceOut(BaseModel):
     check_in: Optional[time]
     check_out: Optional[time]
     working_hours: Optional[float]
-
     class Config:
         from_attributes = True
 
@@ -51,7 +49,6 @@ class ShiftOut(BaseModel):
     shift_name: str
     start_time: time
     end_time: time
-
     class Config:
         from_attributes = True
 
@@ -68,7 +65,6 @@ class LeaveOut(BaseModel):
     end_date: date
     reason: Optional[str]
     status: str
-
     class Config:
         from_attributes = True
 
@@ -101,7 +97,6 @@ class ShiftEntryOut(BaseModel):
     project_name: Optional[str]
     system_type: Optional[str]
     remarks: Optional[str]
-
     class Config:
         from_attributes = True
 
@@ -112,3 +107,46 @@ class ShiftEntryMonthlySummary(BaseModel):
     year: int
     totals_by_type: Dict[str, float]
     total_hours: float
+
+class ProjectCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+    status: Optional[str] = "Active"
+
+class ProjectOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    status: str
+    class Config:
+        from_attributes = True
+
+class ProjectEmployeeOut(BaseModel):
+    id: int
+    name: str
+    employee_id: str
+    class Config:
+        from_attributes = True
+
+class ProjectDetailOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    status: str
+    employees: List[ProjectEmployeeOut]
+    class Config:
+        from_attributes = True
+
+class ProjectAssignRequest(BaseModel):
+    employee_id: int
+
+class ProjectOverviewEntry(BaseModel):
+    employee_id: int
+    employee_name: str
+    hours: float
+
+class ProjectOverview(BaseModel):
+    project_id: int
+    project_name: str
+    total_hours: float
+    by_employee: List[ProjectOverviewEntry]
