@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 from . import models
 from .database import engine
 from .routes import auth_routes, employee_routes, shift_routes, leave_routes, shift_entry_routes, reports_routes, project_routes
@@ -7,6 +8,11 @@ from .routes import auth_routes, employee_routes, shift_routes, leave_routes, sh
 app = FastAPI(title="Dataways Attendance Management System")
 
 models.Base.metadata.create_all(bind=engine)
+
+with engine.connect() as conn:
+    conn.execute(text("ALTER TABLE projects ADD COLUMN IF NOT EXISTS instructions TEXT"))
+    conn.execute(text("ALTER TABLE projects ADD COLUMN IF NOT EXISTS link VARCHAR"))
+    conn.commit()
 
 app.add_middleware(
     CORSMiddleware,
