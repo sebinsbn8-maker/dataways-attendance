@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Optional
 from .. import models, schemas
 from ..database import get_db
 from ..dependencies import get_current_user, require_admin
@@ -47,6 +47,21 @@ def list_projects(
     current_user: models.Employee = Depends(get_current_user),
 ):
     return db.query(models.Project).order_by(models.Project.name).all()
+
+
+@router.get("/assigned", response_model=List[schemas.ProjectOut])
+def assigned_projects(
+    employee_id: Optional[int] = None,
+    db: Session = Depends(get_db),
+    current_user: models.Employee = Depends(get_current_user),
+):
+    target_id = current_user.id
+    if current_user.role == "Admin" and employee_id:
+        target_id = employee_id
+    employee = db.query(models.Employee).filter(models.Employee.id == target_id).first()
+    if not employee:
+        raise HTTPException(status_code=404, detail="Employee not found")
+    return employee.projects
 
 
 @router.get("/{project_id}", response_model=schemas.ProjectDetailOut)

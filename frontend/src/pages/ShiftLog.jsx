@@ -59,9 +59,10 @@ function ShiftLog() {
     }
   };
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (forEmployeeId) => {
     try {
-      const res = await api.get('/projects/');
+      const params = forEmployeeId ? { employee_id: forEmployeeId } : {};
+      const res = await api.get('/projects/assigned', { params });
       setProjects(res.data);
     } catch (err) {
       // ignore
@@ -72,6 +73,12 @@ function ShiftLog() {
     fetchEmployees();
     fetchProjects();
   }, []);
+
+  useEffect(() => {
+    if (admin) {
+      fetchProjects(formData.employee_id || null);
+    }
+  }, [formData.employee_id]);
 
   useEffect(() => {
     fetchEntries();
