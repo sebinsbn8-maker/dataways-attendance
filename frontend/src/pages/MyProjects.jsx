@@ -82,13 +82,8 @@ function MyProjects() {
                 {p.link && (
                   <div>
                     <p className="text-xs font-medium text-slate-500 mb-1">Reference Link</p>
-                    
-                      href={p.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline break-all"
-                    >
-                      🔗 {p.link}
+                    <a href={p.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-sm text-indigo-600 hover:underline break-all">
+                      Open link: {p.link}
                     </a>
                   </div>
                 )}
