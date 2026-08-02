@@ -21,6 +21,7 @@ function Layout({ children }) {
     { path: '/employees', label: 'Employees', icon: '👥', adminOnly: true },
     { path: '/shifts', label: 'Shifts', icon: '📅', adminOnly: true },
     { path: '/leaves', label: 'Leaves', icon: '📝' },
+    { path: '/my-projects', label: 'My Project', icon: '🗂️' },
     { path: '/reports', label: 'Reports', icon: '📈', adminOnly: true },
     { path: '/projects', label: 'Projects', icon: '🗂️', adminOnly: true },
   ];

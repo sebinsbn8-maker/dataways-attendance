@@ -7,11 +7,14 @@ function Projects() {
   const [employees, setEmployees] = useState([]);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [formData, setFormData] = useState({ name: '', description: '', status: 'Active' });
+  const [formData, setFormData] = useState({ name: '', description: '', status: 'Active', instructions: '', link: '' });
 
   const [selectedProject, setSelectedProject] = useState(null);
   const [assignEmployeeId, setAssignEmployeeId] = useState('');
   const [overview, setOverview] = useState(null);
+
+  const [editMode, setEditMode] = useState(false);
+  const [editData, setEditData] = useState({ description: '', status: 'Active', instructions: '', link: '' });
 
   const fetchProjects = async () => {
     try {
@@ -45,7 +48,7 @@ function Projects() {
     setError('');
     try {
       await api.post('/projects/', formData);
-      setFormData({ name: '', description: '', status: 'Active' });
+      setFormData({ name: '', description: '', status: 'Active', instructions: '', link: '' });
       setShowForm(false);
       fetchProjects();
     } catch (err) {
@@ -69,9 +72,16 @@ function Projects() {
 
   const openProject = async (project) => {
     setError('');
+    setEditMode(false);
     try {
       const detailRes = await api.get(`/projects/${project.id}`);
       setSelectedProject(detailRes.data);
+      setEditData({
+        description: detailRes.data.description || '',
+        status: detailRes.data.status,
+        instructions: detailRes.data.instructions || '',
+        link: detailRes.data.link || '',
+      });
       const overviewRes = await api.get(`/projects/${project.id}/overview`);
       setOverview(overviewRes.data);
     } catch (err) {
@@ -83,6 +93,12 @@ function Projects() {
     if (!selectedProject) return;
     const detailRes = await api.get(`/projects/${selectedProject.id}`);
     setSelectedProject(detailRes.data);
+    setEditData({
+      description: detailRes.data.description || '',
+      status: detailRes.data.status,
+      instructions: detailRes.data.instructions || '',
+      link: detailRes.data.link || '',
+    });
     const overviewRes = await api.get(`/projects/${selectedProject.id}/overview`);
     setOverview(overviewRes.data);
     fetchProjects();
@@ -107,6 +123,22 @@ function Projects() {
       refreshSelected();
     } catch (err) {
       setError('Failed to unassign employee');
+    }
+  };
+
+  const handleEditChange = (e) => {
+    setEditData({ ...editData, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedProject) return;
+    setError('');
+    try {
+      await api.put(`/projects/${selectedProject.id}`, editData);
+      setEditMode(false);
+      refreshSelected();
+    } catch (err) {
+      setError('Failed to update project');
     }
   };
 
@@ -146,15 +178,17 @@ function Projects() {
         {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm">{error}</div>}
 
         {showForm && (
-          <form onSubmit={handleCreate} className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <form onSubmit={handleCreate} className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input name="name" value={formData.name} onChange={handleChange} placeholder="Project name" required className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
-            <input name="description" value={formData.description} onChange={handleChange} placeholder="Description (optional)" className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
             <select name="status" value={formData.status} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full">
               <option value="Active">Active</option>
               <option value="On Hold">On Hold</option>
               <option value="Completed">Completed</option>
             </select>
-            <button type="submit" className="sm:col-span-3 bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700">
+            <input name="description" value={formData.description} onChange={handleChange} placeholder="Description (optional)" className="sm:col-span-2 border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            <textarea name="instructions" value={formData.instructions} onChange={handleChange} placeholder="Instructions for assigned employees (optional)" rows={3} className="sm:col-span-2 border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            <input name="link" value={formData.link} onChange={handleChange} placeholder="Reference link (optional) — e.g. https://..." className="sm:col-span-2 border border-gray-200 rounded-lg px-3 py-2 w-full" />
+            <button type="submit" className="sm:col-span-2 bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700">
               Create Project
             </button>
           </form>
@@ -195,19 +229,71 @@ function Projects() {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
                   <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h2 className="text-lg font-semibold text-slate-800">{selectedProject.name}</h2>
+                    <h2 className="text-lg font-semibold text-slate-800">{selectedProject.name}</h2>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => setEditMode(!editMode)}
+                        className="text-indigo-600 hover:underline text-xs font-medium"
+                      >
+                        {editMode ? 'Cancel Edit' : 'Edit Details'}
+                      </button>
+                      <button
+                        onClick={() => handleDelete(selectedProject.id)}
+                        className="text-red-600 hover:underline text-xs font-medium"
+                      >
+                        Delete Project
+                      </button>
+                    </div>
+                  </div>
+
+                  {editMode ? (
+                    <div className="space-y-3 mb-4">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
+                        <select name="status" value={editData.status} onChange={handleEditChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full text-sm">
+                          <option value="Active">Active</option>
+                          <option value="On Hold">On Hold</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Description</label>
+                        <input name="description" value={editData.description} onChange={handleEditChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Instructions</label>
+                        <textarea name="instructions" value={editData.instructions} onChange={handleEditChange} rows={4} className="border border-gray-200 rounded-lg px-3 py-2 w-full text-sm" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">Reference Link</label>
+                        <input name="link" value={editData.link} onChange={handleEditChange} placeholder="https://..." className="border border-gray-200 rounded-lg px-3 py-2 w-full text-sm" />
+                      </div>
+                      <button
+                        onClick={handleSaveEdit}
+                        className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
+                      >
+                        Save Changes
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="mb-4 space-y-2">
+                      {statusBadge(selectedProject.status)}
                       {selectedProject.description && (
-                        <p className="text-sm text-slate-500 mt-1">{selectedProject.description}</p>
+                        <p className="text-sm text-slate-600">{selectedProject.description}</p>
+                      )}
+                      {selectedProject.instructions && (
+                        <div className="bg-gray-50 rounded-lg p-3 mt-2">
+                          <p className="text-xs font-medium text-slate-500 mb-1">Instructions</p>
+                          <p className="text-sm text-slate-700 whitespace-pre-wrap">{selectedProject.instructions}</p>
+                        </div>
+                      )}
+                      {selectedProject.link && (
+                        <a href={selectedProject.link} target="_blank" rel="noopener noreferrer" className="inline-block text-sm text-indigo-600 hover:underline mt-1">
+                          🔗 {selectedProject.link}
+                        </a>
                       )}
                     </div>
-                    <button
-                      onClick={() => handleDelete(selectedProject.id)}
-                      className="text-red-600 hover:underline text-xs font-medium"
-                    >
-                      Delete Project
-                    </button>
-                  </div>
+                  )}
 
                   <h3 className="text-sm font-semibold text-slate-700 mb-2">Assigned Employees</h3>
                   <div className="flex flex-wrap gap-2 mb-4">

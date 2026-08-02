@@ -112,6 +112,14 @@ class ProjectCreate(BaseModel):
     name: str
     description: Optional[str] = None
     status: Optional[str] = "Active"
+    instructions: Optional[str] = None
+    link: Optional[str] = None
+
+class ProjectUpdate(BaseModel):
+    description: Optional[str] = None
+    status: Optional[str] = None
+    instructions: Optional[str] = None
+    link: Optional[str] = None
 
 class ProjectOut(BaseModel):
     id: int
@@ -133,6 +141,8 @@ class ProjectDetailOut(BaseModel):
     name: str
     description: Optional[str]
     status: str
+    instructions: Optional[str]
+    link: Optional[str]
     employees: List[ProjectEmployeeOut]
     class Config:
         from_attributes = True
@@ -150,3 +160,12 @@ class ProjectOverview(BaseModel):
     project_name: str
     total_hours: float
     by_employee: List[ProjectOverviewEntry]
+
+class MyProjectOut(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    status: str
+    instructions: Optional[str]
+    link: Optional[str]
+    hours_worked: float

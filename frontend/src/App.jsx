@@ -9,6 +9,7 @@ import MonthlySummary from './pages/MonthlySummary';
 import EmployeeDetail from './pages/EmployeeDetail';
 import Reports from './pages/Reports';
 import Projects from './pages/Projects';
+import MyProjects from './pages/MyProjects';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/monthly-summary" element={<MonthlySummary />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/projects" element={<Projects />} />
+        <Route path="/my-projects" element={<MyProjects />} />
       </Routes>
     </BrowserRouter>
   );

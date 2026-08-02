@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Float, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Time, Float, Text, Table
 from sqlalchemy.orm import relationship
 from .database import Base
 
@@ -76,4 +76,6 @@ class Project(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(String)
     status = Column(String, default="Active")  # Active, Completed, On Hold
+    instructions = Column(Text)
+    link = Column(String)
     employees = relationship("Employee", secondary=project_assignments, back_populates="projects")

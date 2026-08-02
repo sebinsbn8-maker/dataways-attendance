@@ -14,11 +14,21 @@ def to_detail(project: models.Project) -> schemas.ProjectDetailOut:
         name=project.name,
         description=project.description,
         status=project.status,
+        instructions=project.instructions,
+        link=project.link,
         employees=[
             schemas.ProjectEmployeeOut(id=e.id, name=e.name, employee_id=e.employee_id)
             for e in project.employees
         ],
     )
+
+
+def hours_for(db: Session, employee_id: int, project_name: str) -> float:
+    entries = db.query(models.ShiftEntry).filter(
+        models.ShiftEntry.employee_id == employee_id,
+        models.ShiftEntry.project_name == project_name,
+    ).all()
+    return sum(e.hours for e in entries)
 
 
 @router.post("/", response_model=schemas.ProjectOut)
@@ -34,6 +44,8 @@ def create_project(
         name=project.name,
         description=project.description,
         status=project.status or "Active",
+        instructions=project.instructions,
+        link=project.link,
     )
     db.add(new_project)
     db.commit()
@@ -64,6 +76,25 @@ def assigned_projects(
     return employee.projects
 
 
+@router.get("/my", response_model=List[schemas.MyProjectOut])
+def my_projects(
+    db: Session = Depends(get_db),
+    current_user: models.Employee = Depends(get_current_user),
+):
+    result = []
+    for p in current_user.projects:
+        result.append(schemas.MyProjectOut(
+            id=p.id,
+            name=p.name,
+            description=p.description,
+            status=p.status,
+            instructions=p.instructions,
+            link=p.link,
+            hours_worked=hours_for(db, current_user.id, p.name),
+        ))
+    return result
+
+
 @router.get("/{project_id}", response_model=schemas.ProjectDetailOut)
 def get_project(
     project_id: int,
@@ -73,6 +104,29 @@ def get_project(
     project = db.query(models.Project).filter(models.Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
+    return to_detail(project)
+
+
+@router.put("/{project_id}", response_model=schemas.ProjectDetailOut)
+def update_project(
+    project_id: int,
+    update: schemas.ProjectUpdate,
+    db: Session = Depends(get_db),
+    current_user: models.Employee = Depends(require_admin),
+):
+    project = db.query(models.Project).filter(models.Project.id == project_id).first()
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+    if update.description is not None:
+        project.description = update.description
+    if update.status is not None:
+        project.status = update.status
+    if update.instructions is not None:
+        project.instructions = update.instructions
+    if update.link is not None:
+        project.link = update.link
+    db.commit()
+    db.refresh(project)
     return to_detail(project)
 
 
