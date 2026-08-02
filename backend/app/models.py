@@ -82,3 +82,22 @@ class Notification(Base):
     is_read = Column(String, default="No")  # "Yes" or "No"
     created_at = Column(String)  # stored as ISO string
     employee = relationship("Employee")
+
+class ContributorDatabase(Base):
+    __tablename__ = "contributor_database"
+    id = Column(Integer, primary_key=True, index=True)
+    company_name = Column(String, nullable=False)
+    process = Column(String)
+    industry_type = Column(String)
+    location = Column(String)
+    state = Column(String)
+    contact_number = Column(String)
+    contact_person_name = Column(String)
+    contact_person_designation = Column(String)
+    number_of_employees = Column(String)
+    participation_status = Column(String, default="Interested")  # Interested, Not Interested
+    infolks_contact_person = Column(String)
+    referred_by = Column(String)
+    remarks = Column(Text)
+    estimated_amount = Column(String)
+    field_visited_date = Column(Date)

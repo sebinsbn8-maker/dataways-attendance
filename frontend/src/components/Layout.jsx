@@ -25,6 +25,7 @@ function Layout({ children }) {
     { path: '/my-projects', label: 'My Project', icon: '🗂️' },
     { path: '/reports', label: 'Reports', icon: '📈', adminOnly: true },
     { path: '/projects', label: 'Projects', icon: '🗂️', adminOnly: true },
+    { path: '/contributors', label: 'Contributor DB', icon: '🏢', adminOnly: true },
   ];
 
   const visibleNavItems = navItems.filter((item) => !item.adminOnly || admin);

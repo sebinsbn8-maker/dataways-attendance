@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from . import models
 from .database import engine
-from .routes import auth_routes, employee_routes, shift_routes, leave_routes, shift_entry_routes, reports_routes, project_routes, notification_routes
+from .routes import auth_routes, employee_routes, shift_routes, leave_routes, shift_entry_routes, reports_routes, project_routes, notification_routes, contributor_routes
 
 app = FastAPI(title="Dataways Attendance Management System")
 
@@ -33,6 +33,7 @@ app.include_router(shift_entry_routes.router)
 app.include_router(reports_routes.router)
 app.include_router(project_routes.router)
 app.include_router(notification_routes.router)
+app.include_router(contributor_routes.router)
 
 @app.get("/")
 def read_root():

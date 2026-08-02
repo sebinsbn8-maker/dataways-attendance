@@ -10,6 +10,7 @@ import EmployeeDetail from './pages/EmployeeDetail';
 import Reports from './pages/Reports';
 import Projects from './pages/Projects';
 import MyProjects from './pages/MyProjects';
+import ContributorDatabase from './pages/ContributorDatabase';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
         <Route path="/reports" element={<Reports />} />
         <Route path="/projects" element={<Projects />} />
         <Route path="/my-projects" element={<MyProjects />} />
+        <Route path="/contributors" element={<ContributorDatabase />} />
       </Routes>
     </BrowserRouter>
   );

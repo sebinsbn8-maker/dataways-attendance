@@ -190,3 +190,41 @@ class NotificationOut(BaseModel):
 class NotificationCreate(BaseModel):
     employee_id: int
     message: str
+
+class ContributorCreate(BaseModel):
+    company_name: str
+    process: Optional[str] = None
+    industry_type: Optional[str] = None
+    location: Optional[str] = None
+    state: Optional[str] = None
+    contact_number: Optional[str] = None
+    contact_person_name: Optional[str] = None
+    contact_person_designation: Optional[str] = None
+    number_of_employees: Optional[str] = None
+    participation_status: Optional[str] = "Interested"
+    infolks_contact_person: Optional[str] = None
+    referred_by: Optional[str] = None
+    remarks: Optional[str] = None
+    estimated_amount: Optional[str] = None
+    field_visited_date: Optional[date] = None
+
+class ContributorOut(BaseModel):
+    id: int
+    company_name: str
+    process: Optional[str]
+    industry_type: Optional[str]
+    location: Optional[str]
+    state: Optional[str]
+    contact_number: Optional[str]
+    contact_person_name: Optional[str]
+    contact_person_designation: Optional[str]
+    number_of_employees: Optional[str]
+    participation_status: str
+    infolks_contact_person: Optional[str]
+    referred_by: Optional[str]
+    remarks: Optional[str]
+    estimated_amount: Optional[str]
+    field_visited_date: Optional[date]
+
+    class Config:
+        from_attributes = True
