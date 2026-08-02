@@ -4,6 +4,7 @@ from typing import List
 from .. import models, schemas
 from ..database import get_db
 from ..dependencies import get_current_user, require_admin
+from .notification_routes import create_notification
 
 router = APIRouter(prefix="/leaves", tags=["Leaves"])
 
@@ -52,6 +53,10 @@ def update_leave_status(leave_id: int, update: schemas.LeaveStatusUpdate, db: Se
     leave.status = update.status
     db.commit()
     db.refresh(leave)
+
+    message = f"Your leave request ({leave.start_date} to {leave.end_date}) was {update.status.lower()}."
+    create_notification(db, leave.employee_id, message)
+
     out = schemas.LeaveOut.model_validate(leave)
     out.employee_name = leave.employee.name if leave.employee else None
     return out

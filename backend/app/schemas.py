@@ -19,6 +19,7 @@ class EmployeeOut(BaseModel):
     role: str
     shift: Optional[str]
     status: str
+
     class Config:
         from_attributes = True
 
@@ -36,6 +37,7 @@ class AttendanceOut(BaseModel):
     check_in: Optional[time]
     check_out: Optional[time]
     working_hours: Optional[float]
+
     class Config:
         from_attributes = True
 
@@ -49,6 +51,7 @@ class ShiftOut(BaseModel):
     shift_name: str
     start_time: time
     end_time: time
+
     class Config:
         from_attributes = True
 
@@ -65,6 +68,7 @@ class LeaveOut(BaseModel):
     end_date: date
     reason: Optional[str]
     status: str
+
     class Config:
         from_attributes = True
 
@@ -97,6 +101,7 @@ class ShiftEntryOut(BaseModel):
     project_name: Optional[str]
     system_type: Optional[str]
     remarks: Optional[str]
+
     class Config:
         from_attributes = True
 
@@ -126,6 +131,7 @@ class ProjectOut(BaseModel):
     name: str
     description: Optional[str]
     status: str
+
     class Config:
         from_attributes = True
 
@@ -133,6 +139,7 @@ class ProjectEmployeeOut(BaseModel):
     id: int
     name: str
     employee_id: str
+
     class Config:
         from_attributes = True
 
@@ -144,6 +151,7 @@ class ProjectDetailOut(BaseModel):
     instructions: Optional[str]
     link: Optional[str]
     employees: List[ProjectEmployeeOut]
+
     class Config:
         from_attributes = True
 
@@ -169,3 +177,16 @@ class MyProjectOut(BaseModel):
     instructions: Optional[str]
     link: Optional[str]
     hours_worked: float
+
+class NotificationOut(BaseModel):
+    id: int
+    message: str
+    is_read: str
+    created_at: str
+
+    class Config:
+        from_attributes = True
+
+class NotificationCreate(BaseModel):
+    employee_id: int
+    message: str

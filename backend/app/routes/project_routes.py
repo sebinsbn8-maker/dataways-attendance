@@ -4,6 +4,7 @@ from typing import List, Optional
 from .. import models, schemas
 from ..database import get_db
 from ..dependencies import get_current_user, require_admin
+from .notification_routes import create_notification
 
 router = APIRouter(prefix="/projects", tags=["Projects"])
 
@@ -161,6 +162,7 @@ def assign_employee(
         project.employees.append(employee)
         db.commit()
         db.refresh(project)
+        create_notification(db, employee.id, f"You have been assigned to project '{project.name}'.")
     return to_detail(project)
 
 

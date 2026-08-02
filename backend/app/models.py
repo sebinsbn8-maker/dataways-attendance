@@ -9,7 +9,6 @@ project_assignments = Table(
     Column("employee_id", Integer, ForeignKey("employees.id"), primary_key=True),
 )
 
-
 class Employee(Base):
     __tablename__ = "employees"
     id = Column(Integer, primary_key=True, index=True)
@@ -24,7 +23,6 @@ class Employee(Base):
     attendance_records = relationship("Attendance", back_populates="employee")
     projects = relationship("Project", secondary=project_assignments, back_populates="employees")
 
-
 class Attendance(Base):
     __tablename__ = "attendance"
     id = Column(Integer, primary_key=True, index=True)
@@ -35,14 +33,12 @@ class Attendance(Base):
     working_hours = Column(Float)
     employee = relationship("Employee", back_populates="attendance_records")
 
-
 class Shift(Base):
     __tablename__ = "shifts"
     id = Column(Integer, primary_key=True, index=True)
     shift_name = Column(String, nullable=False)
     start_time = Column(Time, nullable=False)
     end_time = Column(Time, nullable=False)
-
 
 class Leave(Base):
     __tablename__ = "leaves"
@@ -53,7 +49,6 @@ class Leave(Base):
     reason = Column(String)
     status = Column(String, default="Pending")  # Pending, Approved, Rejected
     employee = relationship("Employee")
-
 
 class ShiftEntry(Base):
     __tablename__ = "shift_entries"
@@ -69,7 +64,6 @@ class ShiftEntry(Base):
     remarks = Column(String)
     employee = relationship("Employee")
 
-
 class Project(Base):
     __tablename__ = "projects"
     id = Column(Integer, primary_key=True, index=True)
@@ -79,3 +73,12 @@ class Project(Base):
     instructions = Column(Text)
     link = Column(String)
     employees = relationship("Employee", secondary=project_assignments, back_populates="projects")
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    id = Column(Integer, primary_key=True, index=True)
+    employee_id = Column(Integer, ForeignKey("employees.id"))
+    message = Column(String, nullable=False)
+    is_read = Column(String, default="No")  # "Yes" or "No"
+    created_at = Column(String)  # stored as ISO string
+    employee = relationship("Employee")
