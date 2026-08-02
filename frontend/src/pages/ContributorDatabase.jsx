@@ -88,6 +88,41 @@ function ContributorDatabase() {
     }
   };
 
+  const handleExportCSV = () => {
+    const headers = [
+      'Company Name', 'Process', 'Industry', 'Location', 'State', 'Contact Number',
+      'Contact Person', 'Designation', 'Number of Employees', 'Status',
+      'Infolks Contact', 'Referred By', 'Estimated Amount', 'Visit Date', 'Remarks',
+    ];
+
+    const escapeCSV = (val) => {
+      if (val === null || val === undefined) return '';
+      const str = String(val);
+      if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+        return `"${str.replace(/"/g, '""')}"`;
+      }
+      return str;
+    };
+
+    const rows = entries.map((e) => [
+      e.company_name, e.process, e.industry_type, e.location, e.state, e.contact_number,
+      e.contact_person_name, e.contact_person_designation, e.number_of_employees,
+      e.participation_status, e.infolks_contact_person, e.referred_by,
+      e.estimated_amount, e.field_visited_date, e.remarks,
+    ].map(escapeCSV).join(','));
+
+    const csvContent = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `contributor_database_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Layout>
       <div className="p-8">
@@ -96,12 +131,21 @@ function ContributorDatabase() {
             <h1 className="text-2xl font-bold text-slate-800 mb-1">Contributor Database</h1>
             <p className="text-slate-500">Track prospective companies and contacts</p>
           </div>
-          <button
-            onClick={() => (showForm ? resetForm() : setShowForm(true))}
-            className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700"
-          >
-            {showForm ? 'Cancel' : '+ Add Entry'}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={handleExportCSV}
+              disabled={entries.length === 0}
+              className="bg-white border border-gray-200 text-slate-700 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              ⬇ Export CSV
+            </button>
+            <button
+              onClick={() => (showForm ? resetForm() : setShowForm(true))}
+              className="bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-blue-700"
+            >
+              {showForm ? 'Cancel' : '+ Add Entry'}
+            </button>
+          </div>
         </div>
 
         {error && <div className="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm">{error}</div>}
