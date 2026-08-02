@@ -11,6 +11,7 @@ import Reports from './pages/Reports';
 import Projects from './pages/Projects';
 import MyProjects from './pages/MyProjects';
 import ContributorDatabase from './pages/ContributorDatabase';
+import Overview from './pages/Overview';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/projects" element={<Projects />} />
         <Route path="/my-projects" element={<MyProjects />} />
         <Route path="/contributors" element={<ContributorDatabase />} />
+        <Route path="/overview" element={<Overview />} />
       </Routes>
     </BrowserRouter>
   );

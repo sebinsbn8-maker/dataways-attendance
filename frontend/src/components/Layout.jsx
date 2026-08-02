@@ -17,6 +17,7 @@ function Layout({ children }) {
 
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '🏠' },
+    { path: '/overview', label: 'Overview', icon: '📊', adminOnly: true },
     { path: '/shift-log', label: 'Shift Log', icon: '📋' },
     { path: '/monthly-summary', label: 'Monthly Summary', icon: '📊' },
     { path: '/employees', label: 'Employees', icon: '👥', adminOnly: true },
