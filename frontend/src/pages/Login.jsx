@@ -73,7 +73,7 @@ function Login() {
             Attendance, shifts, projects, and leads — your whole team's work in one workspace.
           </p>
         </div>
-        <p className="text-indigo-300/60 text-sm">Secure attendance platform · From Infolks Group</p>
+        <p className="text-indigo-300/60 text-sm">Secure team workspace · From Infolks Group</p>
       </div>
 
       <div className="w-full lg:w-[30%] flex items-center justify-center bg-[#f5f6fb] p-8">
