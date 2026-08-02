@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { isAdmin, getUserName } from '../utils/auth';
+import NotificationBell from './NotificationBell';
 
 function Layout({ children }) {
   const navigate = useNavigate();
@@ -96,7 +97,7 @@ function Layout({ children }) {
           ☰
         </button>
         <span className="font-bold">Dataways</span>
-        <span className="w-6" />
+        <NotificationBell />
       </div>
 
       {/* Mobile overlay */}
@@ -117,7 +118,13 @@ function Layout({ children }) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto pt-14 lg:pt-0">{children}</main>
+      <main className="flex-1 overflow-y-auto pt-14 lg:pt-0 flex flex-col">
+        {/* Desktop top bar */}
+        <div className="hidden lg:flex justify-end items-center px-8 py-3 border-b border-gray-100 bg-white">
+          <NotificationBell />
+        </div>
+        <div className="flex-1">{children}</div>
+      </main>
     </div>
   );
 }
