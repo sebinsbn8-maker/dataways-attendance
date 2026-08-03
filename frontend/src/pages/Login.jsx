@@ -76,13 +76,13 @@ function Login() {
         <p className="text-indigo-300/60 text-sm">Secure team workspace · From Infolks Group</p>
       </div>
 
-      <div className="w-full lg:w-[30%] flex items-center justify-center bg-[#f5f6fb] p-8">
-        <div className="w-full max-w-sm">
-          <div className="lg:hidden mb-8 text-center flex items-center justify-center gap-2">
-            <img src={logo} alt="Dataways" className="h-10" />
-            <span className="text-xl font-bold text-slate-900">Dataways</span>
-          </div>
+      <div className="w-full lg:w-[30%] flex flex-col items-center justify-center bg-[#f5f6fb]">
+        <div className="lg:hidden w-full bg-[#0a0a2e] py-6 flex items-center justify-center gap-2 mb-6">
+          <img src={logo} alt="Dataways" className="h-8" />
+          <span className="text-lg font-bold text-white">Dataways</span>
+        </div>
 
+        <div className="w-full max-w-sm px-8 pb-8">
           <h2 className="text-2xl font-bold text-slate-900 mb-1">
             {activeTab === 'signin' ? 'Sign in' : 'Create account'}
           </h2>
