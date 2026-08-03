@@ -82,11 +82,11 @@ function Login() {
           <span className="text-lg font-bold text-white">Dataways</span>
         </div>
 
-        <div className="w-full max-w-sm px-6 pb-10 lg:px-8 lg:pb-8 bg-white lg:bg-transparent rounded-t-3xl lg:rounded-none pt-8 lg:pt-0 flex-1 lg:flex-none">
-          <h2 className="text-2xl font-bold text-slate-900 mb-1">
+        <div className="w-full max-w-sm px-6 pb-10 lg:px-8 lg:pb-8 lg:bg-transparent pt-4 lg:pt-0 flex-1 lg:flex-none">
+          <h2 className="text-2xl font-bold text-white lg:text-slate-900 mb-1">
             {activeTab === 'signin' ? 'Sign in' : 'Create account'}
           </h2>
-          <p className="text-slate-500 mb-6">
+          <p className="text-indigo-200 lg:text-slate-500 mb-6">
             {activeTab === 'signin' ? 'Welcome back to your workspace.' : 'Join your team workspace.'}
           </p>
 
