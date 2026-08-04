@@ -62,7 +62,14 @@ function ClientDatabase() {
       resetForm();
       fetchEntries();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to save entry');
+      const detail = err.response?.data?.detail;
+      if (Array.isArray(detail)) {
+        setError(detail.map((d) => `${d.loc?.[d.loc.length - 1]}: ${d.msg}`).join('; '));
+      } else if (typeof detail === 'string') {
+        setError(detail);
+      } else {
+        setError('Failed to save entry');
+      }
     }
   };
 
