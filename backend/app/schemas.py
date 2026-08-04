@@ -1,6 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, List
-from datetime import date, time
+from datetime import date as date_type, time
 
 class EmployeeCreate(BaseModel):
     name: str
@@ -33,7 +33,7 @@ class Token(BaseModel):
 
 class AttendanceOut(BaseModel):
     id: int
-    date: date
+    date: date_type
     check_in: Optional[time]
     check_out: Optional[time]
     working_hours: Optional[float]
@@ -56,16 +56,16 @@ class ShiftOut(BaseModel):
         from_attributes = True
 
 class LeaveCreate(BaseModel):
-    start_date: date
-    end_date: date
+    start_date: date_type
+    end_date: date_type
     reason: Optional[str] = None
 
 class LeaveOut(BaseModel):
     id: int
     employee_id: int
     employee_name: Optional[str] = None
-    start_date: date
-    end_date: date
+    start_date: date_type
+    end_date: date_type
     reason: Optional[str]
     status: str
 
@@ -80,7 +80,7 @@ class PasswordReset(BaseModel):
 
 class ShiftEntryCreate(BaseModel):
     employee_id: Optional[int] = None
-    date: date
+    date: date_type
     shift_type: str
     check_in: Optional[time] = None
     check_out: Optional[time] = None
@@ -93,7 +93,7 @@ class ShiftEntryOut(BaseModel):
     id: int
     employee_id: int
     employee_name: Optional[str] = None
-    date: date
+    date: date_type
     shift_type: str
     check_in: Optional[time]
     check_out: Optional[time]
@@ -206,7 +206,7 @@ class ContributorCreate(BaseModel):
     referred_by: Optional[str] = None
     remarks: Optional[str] = None
     estimated_amount: Optional[str] = None
-    field_visited_date: Optional[date] = None
+    field_visited_date: Optional[date_type] = None
 
 class ContributorOut(BaseModel):
     id: int
@@ -224,14 +224,14 @@ class ContributorOut(BaseModel):
     referred_by: Optional[str]
     remarks: Optional[str]
     estimated_amount: Optional[str]
-    field_visited_date: Optional[date]
+    field_visited_date: Optional[date_type]
 
     class Config:
         from_attributes = True
 
 class ClientCreate(BaseModel):
     sl_no: Optional[int] = None
-    date: Optional[date] = None
+    date: Optional[date_type] = None
     usecase: Optional[str] = None
     client_id: Optional[str] = None
     client_name: str
@@ -245,7 +245,7 @@ class ClientCreate(BaseModel):
     tool_type: Optional[str] = None
     tool_name: Optional[str] = None
     output_delivered: Optional[str] = None
-    date_of_submission: Optional[date] = None
+    date_of_submission: Optional[date_type] = None
     phase: Optional[str] = None
     project_status: Optional[str] = None
     challenges: Optional[str] = None
@@ -255,7 +255,7 @@ class ClientCreate(BaseModel):
 class ClientOut(BaseModel):
     id: int
     sl_no: Optional[int]
-    date: Optional[date]
+    date: Optional[date_type]
     usecase: Optional[str]
     client_id: Optional[str]
     client_name: str
@@ -269,7 +269,7 @@ class ClientOut(BaseModel):
     tool_type: Optional[str]
     tool_name: Optional[str]
     output_delivered: Optional[str]
-    date_of_submission: Optional[date]
+    date_of_submission: Optional[date_type]
     phase: Optional[str]
     project_status: Optional[str]
     challenges: Optional[str]
