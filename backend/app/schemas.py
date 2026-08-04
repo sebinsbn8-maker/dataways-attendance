@@ -228,3 +228,53 @@ class ContributorOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+class ClientCreate(BaseModel):
+    sl_no: Optional[int] = None
+    date: Optional[date] = None
+    usecase: Optional[str] = None
+    client_id: Optional[str] = None
+    client_name: str
+    project_id: Optional[str] = None
+    project_name: Optional[str] = None
+    project_description: Optional[str] = None
+    workflow_details: Optional[str] = None
+    timeframe_shared: Optional[str] = None
+    bd_executive: Optional[str] = None
+    poc_coordinator: Optional[str] = None
+    tool_type: Optional[str] = None
+    tool_name: Optional[str] = None
+    output_delivered: Optional[str] = None
+    date_of_submission: Optional[date] = None
+    phase: Optional[str] = None
+    project_status: Optional[str] = None
+    challenges: Optional[str] = None
+    reason_for_dropping: Optional[str] = None
+    remarks: Optional[str] = None
+
+class ClientOut(BaseModel):
+    id: int
+    sl_no: Optional[int]
+    date: Optional[date]
+    usecase: Optional[str]
+    client_id: Optional[str]
+    client_name: str
+    project_id: Optional[str]
+    project_name: Optional[str]
+    project_description: Optional[str]
+    workflow_details: Optional[str]
+    timeframe_shared: Optional[str]
+    bd_executive: Optional[str]
+    poc_coordinator: Optional[str]
+    tool_type: Optional[str]
+    tool_name: Optional[str]
+    output_delivered: Optional[str]
+    date_of_submission: Optional[date]
+    phase: Optional[str]
+    project_status: Optional[str]
+    challenges: Optional[str]
+    reason_for_dropping: Optional[str]
+    remarks: Optional[str]
+
+    class Config:
+        from_attributes = True

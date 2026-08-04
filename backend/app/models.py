@@ -101,3 +101,28 @@ class ContributorDatabase(Base):
     remarks = Column(Text)
     estimated_amount = Column(String)
     field_visited_date = Column(Date)
+
+class ClientDatabase(Base):
+    __tablename__ = "client_database"
+    id = Column(Integer, primary_key=True, index=True)
+    sl_no = Column(Integer)
+    date = Column(Date)
+    usecase = Column(String)
+    client_id = Column(String)
+    client_name = Column(String, nullable=False)
+    project_id = Column(String)
+    project_name = Column(String)
+    project_description = Column(Text)
+    workflow_details = Column(Text)
+    timeframe_shared = Column(String)
+    bd_executive = Column(String)
+    poc_coordinator = Column(String)
+    tool_type = Column(String)  # Client Tool / Internal Tool
+    tool_name = Column(String)
+    output_delivered = Column(String)  # Yes / No
+    date_of_submission = Column(Date)
+    phase = Column(String)  # Sample Phase / Enquiry Phase
+    project_status = Column(String)  # Real Phase, Pending, Ongoing, Dropped, Postponed, Paid sample, Waiting for feedback
+    challenges = Column(Text)
+    reason_for_dropping = Column(Text)
+    remarks = Column(Text)
