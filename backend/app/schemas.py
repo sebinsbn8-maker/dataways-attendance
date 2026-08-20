@@ -111,6 +111,7 @@ class ShiftEntryMonthlySummary(BaseModel):
     month: int
     year: int
     totals_by_type: Dict[str, float]
+    counts_by_type: Dict[str, int]
     total_hours: float
 
 class ProjectCreate(BaseModel):
