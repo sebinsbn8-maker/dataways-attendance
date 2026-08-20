@@ -3,7 +3,7 @@ import Layout from '../components/Layout';
 import api from '../api/axios';
 import { isAdmin } from '../utils/auth';
 
-const SHIFT_TYPES = ['General', 'General + OT', 'Morning', 'Evening', 'Night', 'OT', 'Work From Home', 'Half Day', 'Half Day + OT', 'Leave'];
+const SHIFT_TYPES = ['General', 'Morning', 'Evening', 'Night', 'OT', 'Work From Home', 'Half Day', 'Leave'];
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -11,14 +11,12 @@ const MONTH_NAMES = [
 
 const TYPE_STYLES = {
   General: 'bg-indigo-50 text-indigo-700 border-indigo-100',
-  'General + OT': 'bg-fuchsia-50 text-fuchsia-700 border-fuchsia-100',
   Morning: 'bg-amber-50 text-amber-700 border-amber-100',
   Evening: 'bg-orange-50 text-orange-700 border-orange-100',
   Night: 'bg-violet-50 text-violet-700 border-violet-100',
   OT: 'bg-rose-50 text-rose-700 border-rose-100',
   'Work From Home': 'bg-teal-50 text-teal-700 border-teal-100',
   'Half Day': 'bg-sky-50 text-sky-700 border-sky-100',
-  'Half Day + OT': 'bg-cyan-50 text-cyan-700 border-cyan-100',
   Leave: 'bg-slate-100 text-slate-600 border-slate-200',
 };
 
@@ -108,7 +106,9 @@ function MonthlySummary() {
                   <div key={type} className={`rounded-lg p-3 text-center border ${TYPE_STYLES[type]}`}>
                     <p className="text-xs font-medium mb-1">{type}</p>
                     <p className="font-bold text-lg">
-                      {emp.totals_by_type[type] || 0}
+                      {type === 'Leave'
+                        ? `${emp.counts_by_type?.[type] || 0} day${(emp.counts_by_type?.[type] || 0) === 1 ? '' : 's'}`
+                        : emp.totals_by_type[type] || 0}
                     </p>
                   </div>
                 ))}
