@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Layout from '../components/Layout';
 import api from '../api/axios';
 import { isAdmin } from '../utils/auth';
@@ -7,6 +7,11 @@ const SHIFT_TYPES = ['General', 'General + OT', 'Morning', 'Evening', 'Night', '
 const FIXED_HOURS = { General: 7, Morning: 7, Evening: 7, Night: 7, 'Half Day': 3.5, Leave: 0 };
 const MANUAL_TYPES = ['OT', 'Work From Home'];
 const TIME_BASED_TYPES = ['General + OT', 'Half Day + OT'];
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
 function formatTime(t) {
   if (!t) return null;
@@ -26,6 +31,14 @@ function computeTimeBasedHours(checkIn, checkOut) {
   if (endMinutes <= startMinutes) endMinutes += 24 * 60;
   const diffHours = (endMinutes - startMinutes) / 60;
   return Math.round(diffHours * 100) / 100;
+}
+
+function pad2(n) {
+  return String(n).padStart(2, '0');
+}
+
+function dateStr(year, month, day) {
+  return `${year}-${pad2(month + 1)}-${pad2(day)}`;
 }
 
 function ShiftLog() {
@@ -49,6 +62,11 @@ function ShiftLog() {
   };
   const [formData, setFormData] = useState(emptyForm);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
+
+  const today = new Date();
+  const [calMonth, setCalMonth] = useState(today.getMonth());
+  const [calYear, setCalYear] = useState(today.getFullYear());
+  const [selectedDay, setSelectedDay] = useState(null);
 
   const fetchEntries = async () => {
     try {
@@ -150,6 +168,7 @@ function ShiftLog() {
       system_type: entry.system_type || '',
       remarks: entry.remarks || '',
     });
+    setSelectedDay(null);
   };
 
   const handleDelete = async (id) => {
@@ -157,6 +176,7 @@ function ShiftLog() {
     try {
       await api.delete(`/shift-entries/${id}`);
       fetchEntries();
+      setSelectedDay(null);
     } catch (err) {
       setError('Failed to delete entry');
     }
@@ -165,6 +185,52 @@ function ShiftLog() {
   const isManualHours = MANUAL_TYPES.includes(formData.shift_type);
   const isTimeBased = TIME_BASED_TYPES.includes(formData.shift_type);
   const computedHours = isTimeBased ? computeTimeBasedHours(formData.check_in, formData.check_out) : null;
+
+  // Group entries by date for calendar
+  const entriesByDate = useMemo(() => {
+    const map = {};
+    entries.forEach((e) => {
+      if (!map[e.date]) map[e.date] = [];
+      map[e.date].push(e);
+    });
+    return map;
+  }, [entries]);
+
+  const calendarDays = useMemo(() => {
+    const firstDayOfWeek = new Date(calYear, calMonth, 1).getDay();
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const days = [];
+    for (let i = 0; i < firstDayOfWeek; i++) days.push(null);
+    for (let d = 1; d <= daysInMonth; d++) days.push(d);
+    return days;
+  }, [calMonth, calYear]);
+
+  const goPrevMonth = () => {
+    if (calMonth === 0) {
+      setCalMonth(11);
+      setCalYear(calYear - 1);
+    } else {
+      setCalMonth(calMonth - 1);
+    }
+  };
+
+  const goNextMonth = () => {
+    if (calMonth === 11) {
+      setCalMonth(0);
+      setCalYear(calYear + 1);
+    } else {
+      setCalMonth(calMonth + 1);
+    }
+  };
+
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+  const handleAddForDate = (dStr) => {
+    setFormData({ ...emptyForm, date: dStr, employee_id: formData.employee_id });
+    setEditingId(null);
+    setSelectedDay(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <Layout>
@@ -258,73 +324,92 @@ function ShiftLog() {
           </div>
         </form>
 
-        {/* Desktop table */}
-        <div className="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="p-4 font-medium text-slate-500">Date</th>
-                {admin && <th className="p-4 font-medium text-slate-500">Employee</th>}
-                <th className="p-4 font-medium text-slate-500">Shift</th>
-                <th className="p-4 font-medium text-slate-500">Check In</th>
-                <th className="p-4 font-medium text-slate-500">Check Out</th>
-                <th className="p-4 font-medium text-slate-500">Hours</th>
-                <th className="p-4 font-medium text-slate-500">Project</th>
-                <th className="p-4 font-medium text-slate-500">System</th>
-                <th className="p-4 font-medium text-slate-500">Remarks</th>
-                <th className="p-4"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {entries.map((e) => (
-                <tr key={e.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50">
-                  <td className="p-4 text-slate-700">{e.date}</td>
-                  {admin && <td className="p-4 text-slate-700">{e.employee_name}</td>}
-                  <td className="p-4 text-slate-700">{e.shift_type}</td>
-                  <td className="p-4 text-slate-500">{formatTime(e.check_in) || '—'}</td>
-                  <td className="p-4 text-slate-500">{formatTime(e.check_out) || '—'}</td>
-                  <td className="p-4 font-medium text-slate-800">{e.hours}</td>
-                  <td className="p-4 text-slate-500">{e.project_name || '—'}</td>
-                  <td className="p-4 text-slate-500">{e.system_type || '—'}</td>
-                  <td className="p-4 text-slate-500">{e.remarks || '—'}</td>
-                  <td className="p-4 flex gap-3">
-                    <button onClick={() => handleEdit(e)} className="text-blue-600 hover:text-blue-700 text-sm font-medium">Edit</button>
-                    <button onClick={() => handleDelete(e.id)} className="text-red-600 hover:text-red-700 text-sm font-medium">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Calendar */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="font-semibold text-slate-800">{MONTH_NAMES[calMonth]}, {calYear}</h2>
+            <div className="flex gap-2">
+              <button onClick={goPrevMonth} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-slate-600">‹</button>
+              <button onClick={goNextMonth} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 text-slate-600">›</button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-1">
+            {WEEKDAYS.map((w) => (
+              <div key={w} className="text-center text-xs font-medium text-slate-400 py-1">{w}</div>
+            ))}
+          </div>
+
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
+            {calendarDays.map((day, i) => {
+              if (day === null) return <div key={`empty-${i}`} />;
+              const dStr = dateStr(calYear, calMonth, day);
+              const dayEntries = entriesByDate[dStr] || [];
+              const isToday = dStr === todayStr;
+              return (
+                <button
+                  key={dStr}
+                  onClick={() => setSelectedDay(dStr)}
+                  className={`aspect-square sm:aspect-auto sm:h-16 rounded-lg border flex flex-col items-center justify-center relative transition ${
+                    isToday ? 'border-indigo-400 bg-indigo-50' : 'border-gray-100 hover:bg-gray-50'
+                  }`}
+                >
+                  <span className={`text-sm ${isToday ? 'font-bold text-indigo-700' : 'text-slate-700'}`}>{day}</span>
+                  {dayEntries.length > 0 && (
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Mobile / tablet cards */}
-        <div className="lg:hidden space-y-3">
-          {entries.map((e) => (
-            <div key={e.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <p className="font-medium text-slate-800">{e.date}</p>
-                  {admin && <p className="text-xs text-slate-500">{e.employee_name}</p>}
-                </div>
-                <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
-                  {e.shift_type}
-                </span>
+        {/* Day detail modal */}
+        {selectedDay && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={() => setSelectedDay(null)}>
+            <div className="bg-white rounded-xl shadow-lg max-w-lg w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <div className="p-4 sm:p-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="font-semibold text-slate-800">{selectedDay}</h3>
+                <button onClick={() => setSelectedDay(null)} className="text-slate-400 hover:text-slate-600 text-xl leading-none">✕</button>
               </div>
-              <div className="grid grid-cols-2 gap-y-1 text-xs text-slate-500 mb-3">
-                <p>In: {formatTime(e.check_in) || '—'}</p>
-                <p>Out: {formatTime(e.check_out) || '—'}</p>
-                <p>Hours: <span className="font-medium text-slate-800">{e.hours}</span></p>
-                <p>System: {e.system_type || '—'}</p>
-                {e.project_name && <p className="col-span-2">Project: {e.project_name}</p>}
-                {e.remarks && <p className="col-span-2">Remarks: {e.remarks}</p>}
-              </div>
-              <div className="flex gap-4">
-                <button onClick={() => handleEdit(e)} className="text-blue-600 text-xs font-medium">Edit</button>
-                <button onClick={() => handleDelete(e.id)} className="text-red-600 text-xs font-medium">Delete</button>
+
+              <div className="p-4 sm:p-6 space-y-3">
+                {(entriesByDate[selectedDay] || []).length === 0 && (
+                  <p className="text-sm text-slate-400 text-center py-4">No entries for this date.</p>
+                )}
+                {(entriesByDate[selectedDay] || []).map((e) => (
+                  <div key={e.id} className="border border-gray-100 rounded-lg p-3">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{e.shift_type}</span>
+                        {admin && <p className="text-xs text-slate-500 mt-1">{e.employee_name}</p>}
+                      </div>
+                      <span className="font-semibold text-slate-800">{e.hours} hrs</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-y-1 text-xs text-slate-500 mb-2">
+                      <p>In: {formatTime(e.check_in) || '—'}</p>
+                      <p>Out: {formatTime(e.check_out) || '—'}</p>
+                      <p>System: {e.system_type || '—'}</p>
+                      {e.project_name && <p>Project: {e.project_name}</p>}
+                      {e.remarks && <p className="col-span-2">Remarks: {e.remarks}</p>}
+                    </div>
+                    <div className="flex gap-4">
+                      <button onClick={() => handleEdit(e)} className="text-blue-600 text-xs font-medium">Edit</button>
+                      <button onClick={() => handleDelete(e.id)} className="text-red-600 text-xs font-medium">Delete</button>
+                    </div>
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => handleAddForDate(selectedDay)}
+                  className="w-full border border-dashed border-gray-300 rounded-lg py-2.5 text-sm font-medium text-slate-500 hover:bg-gray-50"
+                >
+                  + Add entry for this date
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </Layout>
   );
