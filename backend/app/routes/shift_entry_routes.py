@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Optional
-from datetime import date as date_type, datetime, timedelta
+from datetime import date as date_type
 from calendar import monthrange
 from .. import models, schemas
 from ..database import get_db
@@ -18,26 +18,16 @@ FIXED_HOURS = {
     "Leave": 0,
 }
 MANUAL_HOUR_TYPES = ["OT", "Work From Home"]
-TIME_BASED_TYPES = ["General + OT", "Half Day + OT"]
-VALID_SHIFT_TYPES = list(FIXED_HOURS.keys()) + MANUAL_HOUR_TYPES + TIME_BASED_TYPES
+VALID_SHIFT_TYPES = list(FIXED_HOURS.keys()) + MANUAL_HOUR_TYPES
 
 
-def calculate_hours(shift_type: str, manual_hours: Optional[float], check_in=None, check_out=None):
+def calculate_hours(shift_type: str, manual_hours: Optional[float]):
     if shift_type in FIXED_HOURS:
         return FIXED_HOURS[shift_type]
     if shift_type in MANUAL_HOUR_TYPES:
         if manual_hours is None:
             raise HTTPException(status_code=400, detail=f"manual_hours is required for shift_type '{shift_type}'")
         return manual_hours
-    if shift_type in TIME_BASED_TYPES:
-        if check_in is None or check_out is None:
-            raise HTTPException(status_code=400, detail=f"check_in and check_out are required for shift_type '{shift_type}'")
-        start_dt = datetime.combine(date_type.today(), check_in)
-        end_dt = datetime.combine(date_type.today(), check_out)
-        if end_dt <= start_dt:
-            end_dt += timedelta(days=1)
-        diff_hours = (end_dt - start_dt).total_seconds() / 3600
-        return round(diff_hours, 2)
     raise HTTPException(status_code=400, detail=f"Invalid shift_type. Must be one of {VALID_SHIFT_TYPES}")
 
 
@@ -59,7 +49,7 @@ def create_entry(
             raise HTTPException(status_code=403, detail="Only Admin can log entries for other employees")
         target_employee_id = entry.employee_id
 
-    hours = calculate_hours(entry.shift_type, entry.manual_hours, entry.check_in, entry.check_out)
+    hours = calculate_hours(entry.shift_type, entry.manual_hours)
 
     new_entry = models.ShiftEntry(
         employee_id=target_employee_id,
@@ -126,7 +116,7 @@ def update_entry(
     if current_user.role != "Admin" and existing.employee_id != current_user.id:
         raise HTTPException(status_code=403, detail="You can only edit your own entries")
 
-    hours = calculate_hours(entry.shift_type, entry.manual_hours, entry.check_in, entry.check_out)
+    hours = calculate_hours(entry.shift_type, entry.manual_hours)
 
     existing.date = entry.date
     existing.shift_type = entry.shift_type
