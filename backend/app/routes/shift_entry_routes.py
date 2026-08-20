@@ -17,7 +17,7 @@ FIXED_HOURS = {
     "Half Day": 3.5,
     "Leave": 0,
 }
-MANUAL_HOUR_TYPES = ["OT", "Work From Home", "General + OT", "Half Day + OT"]
+MANUAL_HOUR_TYPES = ["OT", "Work From Home"]
 VALID_SHIFT_TYPES = list(FIXED_HOURS.keys()) + MANUAL_HOUR_TYPES
 
 

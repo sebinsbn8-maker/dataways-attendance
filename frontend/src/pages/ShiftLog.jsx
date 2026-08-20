@@ -3,9 +3,9 @@ import Layout from '../components/Layout';
 import api from '../api/axios';
 import { isAdmin } from '../utils/auth';
 
-const SHIFT_TYPES = ['General', 'General + OT', 'Morning', 'Evening', 'Night', 'OT', 'Work From Home', 'Half Day', 'Half Day + OT', 'Leave'];
+const SHIFT_TYPES = ['General', 'Morning', 'Evening', 'Night', 'OT', 'Work From Home', 'Half Day', 'Leave'];
 const FIXED_HOURS = { General: 7, Morning: 7, Evening: 7, Night: 7, 'Half Day': 3.5, Leave: 0 };
-const MANUAL_TYPES = ['OT', 'Work From Home', 'General + OT', 'Half Day + OT'];
+const MANUAL_TYPES = ['OT', 'Work From Home'];
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -218,12 +218,7 @@ function ShiftLog() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const manualHoursLabel =
-    formData.shift_type === 'General + OT' || formData.shift_type === 'Half Day + OT'
-      ? 'Total Hours (incl. OT)'
-      : formData.shift_type === 'OT'
-      ? 'OT Hours'
-      : 'Hours';
+  const manualHoursLabel = formData.shift_type === 'OT' ? 'OT Hours' : formData.shift_type === 'Work From Home' ? 'WFH Hours' : 'Hours';
 
   return (
     <Layout>
