@@ -5,8 +5,7 @@ import { isAdmin } from '../utils/auth';
 
 const SHIFT_TYPES = ['General', 'General + OT', 'Morning', 'Evening', 'Night', 'OT', 'Work From Home', 'Half Day', 'Half Day + OT', 'Leave'];
 const FIXED_HOURS = { General: 7, Morning: 7, Evening: 7, Night: 7, 'Half Day': 3.5, Leave: 0 };
-const MANUAL_TYPES = ['OT', 'Work From Home'];
-const TIME_BASED_TYPES = ['General + OT', 'Half Day + OT'];
+const MANUAL_TYPES = ['OT', 'Work From Home', 'General + OT', 'Half Day + OT'];
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -20,17 +19,6 @@ function formatTime(t) {
   const ampm = hour >= 12 ? 'PM' : 'AM';
   const hour12 = hour % 12 === 0 ? 12 : hour % 12;
   return `${hour12}:${m} ${ampm}`;
-}
-
-function computeTimeBasedHours(checkIn, checkOut) {
-  if (!checkIn || !checkOut) return null;
-  const [inH, inM] = checkIn.split(':').map(Number);
-  const [outH, outM] = checkOut.split(':').map(Number);
-  let startMinutes = inH * 60 + inM;
-  let endMinutes = outH * 60 + outM;
-  if (endMinutes <= startMinutes) endMinutes += 24 * 60;
-  const diffHours = (endMinutes - startMinutes) / 60;
-  return Math.round(diffHours * 100) / 100;
 }
 
 function pad2(n) {
@@ -183,8 +171,6 @@ function ShiftLog() {
   };
 
   const isManualHours = MANUAL_TYPES.includes(formData.shift_type);
-  const isTimeBased = TIME_BASED_TYPES.includes(formData.shift_type);
-  const computedHours = isTimeBased ? computeTimeBasedHours(formData.check_in, formData.check_out) : null;
 
   // Group entries by date for calendar
   const entriesByDate = useMemo(() => {
@@ -232,6 +218,13 @@ function ShiftLog() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const manualHoursLabel =
+    formData.shift_type === 'General + OT' || formData.shift_type === 'Half Day + OT'
+      ? 'Total Hours (incl. OT)'
+      : formData.shift_type === 'OT'
+      ? 'OT Hours'
+      : 'Hours';
+
   return (
     <Layout>
       <div className="p-4 sm:p-8">
@@ -277,11 +270,16 @@ function ShiftLog() {
             </select>
 
             {isManualHours ? (
-              <input type="number" step="0.5" name="manual_hours" value={formData.manual_hours} onChange={handleChange} placeholder="Hours" className="border border-gray-200 rounded-lg px-3 py-2 w-full" required />
-            ) : isTimeBased ? (
-              <div className="flex items-center px-3 py-2 text-sm text-slate-500 bg-gray-50 rounded-lg">
-                {computedHours !== null ? `${computedHours} hrs (auto)` : 'Enter start & end time'}
-              </div>
+              <input
+                type="number"
+                step="0.5"
+                name="manual_hours"
+                value={formData.manual_hours}
+                onChange={handleChange}
+                placeholder={manualHoursLabel}
+                className="border border-gray-200 rounded-lg px-3 py-2 w-full"
+                required
+              />
             ) : (
               <div className="flex items-center px-3 py-2 text-sm text-slate-500 bg-gray-50 rounded-lg">
                 {FIXED_HOURS[formData.shift_type]} hrs (auto)
@@ -290,11 +288,11 @@ function ShiftLog() {
 
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Start Time</label>
-              <input type="time" name="check_in" value={formData.check_in} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full" required={isTimeBased} />
+              <input type="time" name="check_in" value={formData.check_in} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
             </div>
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">End Time</label>
-              <input type="time" name="check_out" value={formData.check_out} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full" required={isTimeBased} />
+              <input type="time" name="check_out" value={formData.check_out} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full" />
             </div>
 
             <select name="system_type" value={formData.system_type} onChange={handleChange} className="border border-gray-200 rounded-lg px-3 py-2 w-full">
