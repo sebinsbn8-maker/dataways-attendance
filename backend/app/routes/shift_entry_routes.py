@@ -180,9 +180,11 @@ def monthly_summary(
                 "month": month,
                 "year": year,
                 "totals_by_type": {},
+                "counts_by_type": {},
                 "total_hours": 0,
             }
         bucket = summary_by_employee[e.employee_id]
         bucket["totals_by_type"][e.shift_type] = bucket["totals_by_type"].get(e.shift_type, 0) + e.hours
+        bucket["counts_by_type"][e.shift_type] = bucket["counts_by_type"].get(e.shift_type, 0) + 1
         bucket["total_hours"] += e.hours
     return list(summary_by_employee.values())
