@@ -17,11 +17,11 @@ FIXED_HOURS = {
     "Half Day": 3.5,
     "Leave": 0,
 }
-MANUAL_HOUR_TYPES = ["OT", "Work From Home"]
+MANUAL_HOUR_TYPES = ["OT", "Work From Home", "General + OT", "Half Day + OT"]
 VALID_SHIFT_TYPES = list(FIXED_HOURS.keys()) + MANUAL_HOUR_TYPES
 
 
-def calculate_hours(shift_type: str, manual_hours: Optional[float]):
+def calculate_hours(shift_type: str, manual_hours: Optional[float], check_in=None, check_out=None):
     if shift_type in FIXED_HOURS:
         return FIXED_HOURS[shift_type]
     if shift_type in MANUAL_HOUR_TYPES:
@@ -49,7 +49,7 @@ def create_entry(
             raise HTTPException(status_code=403, detail="Only Admin can log entries for other employees")
         target_employee_id = entry.employee_id
 
-    hours = calculate_hours(entry.shift_type, entry.manual_hours)
+    hours = calculate_hours(entry.shift_type, entry.manual_hours, entry.check_in, entry.check_out)
 
     new_entry = models.ShiftEntry(
         employee_id=target_employee_id,
@@ -116,7 +116,7 @@ def update_entry(
     if current_user.role != "Admin" and existing.employee_id != current_user.id:
         raise HTTPException(status_code=403, detail="You can only edit your own entries")
 
-    hours = calculate_hours(entry.shift_type, entry.manual_hours)
+    hours = calculate_hours(entry.shift_type, entry.manual_hours, entry.check_in, entry.check_out)
 
     existing.date = entry.date
     existing.shift_type = entry.shift_type
@@ -145,7 +145,6 @@ def delete_entry(
         raise HTTPException(status_code=404, detail="Shift entry not found")
     if current_user.role != "Admin" and existing.employee_id != current_user.id:
         raise HTTPException(status_code=403, detail="You can only delete your own entries")
-
     db.delete(existing)
     db.commit()
     return {"message": "Shift entry deleted"}
@@ -161,7 +160,6 @@ def monthly_summary(
 ):
     start = date_type(year, month, 1)
     end = date_type(year, month, monthrange(year, month)[1])
-
     if current_user.role == "Admin":
         query = db.query(models.ShiftEntry).filter(models.ShiftEntry.date >= start, models.ShiftEntry.date <= end)
         if employee_id:
@@ -172,9 +170,7 @@ def monthly_summary(
             models.ShiftEntry.date >= start,
             models.ShiftEntry.date <= end,
         )
-
     entries = query.all()
-
     summary_by_employee = {}
     for e in entries:
         if e.employee_id not in summary_by_employee:
@@ -189,5 +185,4 @@ def monthly_summary(
         bucket = summary_by_employee[e.employee_id]
         bucket["totals_by_type"][e.shift_type] = bucket["totals_by_type"].get(e.shift_type, 0) + e.hours
         bucket["total_hours"] += e.hours
-
     return list(summary_by_employee.values())
